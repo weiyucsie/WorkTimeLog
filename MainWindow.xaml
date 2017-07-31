@@ -1,0 +1,33 @@
+﻿<Window x:Class="WorkTimeLog.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WorkTimeLog"
+        mc:Ignorable="d"
+        Title="工作時間紀錄" Height="350" Width="525">
+    <Window.Resources>
+        <local:WorkTimeLogEntryStore x:Key="LogStore" />
+        <local:WorkTimeLogEntryToBooleanConverter x:Key="EntryConverter" />
+    </Window.Resources>
+    <StackPanel Orientation="Vertical" DataContext="{StaticResource LogStore}">
+        <Label>工作時間紀錄</Label>
+        <RadioButton GroupName="WorkState" Name="RadioBeginWork" IsChecked="{Binding Path=WorkType, Mode=OneWay, Converter={StaticResource EntryConverter}, ConverterParameter={x:Static local:WorkState.上班}}">上班</RadioButton>
+        <RadioButton GroupName="WorkState" Name="RadioEndWork" IsChecked="{Binding Path=WorkType, Mode=OneWay, Converter={StaticResource EntryConverter}, ConverterParameter={x:Static local:WorkState.下班}}">下班</RadioButton>
+        <StackPanel Orientation="Horizontal">
+            <Button Click="Button_Click">紀錄</Button>
+            <Button Click="Clear_Click">清除紀錄</Button>
+        </StackPanel>
+        <ListBox Name="WorkTimeLogListBox" ItemsSource="{Binding Entries}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <WrapPanel>
+                        <TextBlock Text="{Binding LocalTime}" />
+                        <TextBlock Text=" " />
+                        <TextBlock Text="{Binding Type}" />
+                    </WrapPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </StackPanel>
+</Window>
