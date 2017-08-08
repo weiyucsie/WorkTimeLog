@@ -32,15 +32,15 @@ namespace WorkTimeLog
             {
                 WorkState defaultType = WorkState.上班;
 
-                WorkTimeLogEntry lastEntry = Entries.LastOrDefault();
+                WorkTimeLogEntry firstEntry = Entries.FirstOrDefault();
 
-                if (lastEntry == null)
+                if (firstEntry == null)
                 {
                     return defaultType;
                 }
                 else
                 {
-                    return GetNextWorkState(lastEntry.Type);
+                    return GetNextWorkState(firstEntry.Type);
                 }
             }
         }
@@ -66,7 +66,7 @@ namespace WorkTimeLog
                     using (LiteDatabase db = new LiteDatabase(DB_FILENAME))
                     {
                         var workTimeEntries = db.GetCollection<WorkTimeLogEntry>(DB_COLLECTION);
-                        _Entries = new ObservableCollection<WorkTimeLogEntry>(workTimeEntries.FindAll());
+                        _Entries = new ObservableCollection<WorkTimeLogEntry>(workTimeEntries.FindAll().Reverse());
                         _Entries.CollectionChanged += _Entries_CollectionChanged;
                     }
                 }
@@ -95,7 +95,7 @@ namespace WorkTimeLog
 
         public void Insert(WorkTimeLogEntry newEntry)
         {
-            Entries.Add(newEntry);
+            Entries.Insert(0, newEntry);
         }
 
         public void Clear()

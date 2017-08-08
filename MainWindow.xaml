@@ -10,11 +10,11 @@
         <local:WorkTimeLogEntryStore x:Key="LogStore" />
         <local:WorkTimeLogEntryToBooleanConverter x:Key="EntryConverter" />
     </Window.Resources>
-    <StackPanel Orientation="Vertical" DataContext="{StaticResource LogStore}">
-        <Label>工作時間紀錄</Label>
-        <RadioButton GroupName="WorkState" Name="RadioBeginWork" IsChecked="{Binding Path=WorkType, Mode=OneWay, Converter={StaticResource EntryConverter}, ConverterParameter={x:Static local:WorkState.上班}}">上班</RadioButton>
-        <RadioButton GroupName="WorkState" Name="RadioEndWork" IsChecked="{Binding Path=WorkType, Mode=OneWay, Converter={StaticResource EntryConverter}, ConverterParameter={x:Static local:WorkState.下班}}">下班</RadioButton>
-        <StackPanel Orientation="Horizontal">
+    <DockPanel DataContext="{StaticResource LogStore}">
+        <Label DockPanel.Dock="Top">工作時間紀錄</Label>
+        <RadioButton DockPanel.Dock="Top" GroupName="WorkState" Name="RadioBeginWork" IsChecked="{Binding Path=WorkType, Mode=OneWay, Converter={StaticResource EntryConverter}, ConverterParameter={x:Static local:WorkState.上班}}">上班</RadioButton>
+        <RadioButton DockPanel.Dock="Top" GroupName="WorkState" Name="RadioEndWork" IsChecked="{Binding Path=WorkType, Mode=OneWay, Converter={StaticResource EntryConverter}, ConverterParameter={x:Static local:WorkState.下班}}">下班</RadioButton>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
             <Button Click="Button_Click">紀錄</Button>
             <Button Click="Clear_Click">清除紀錄</Button>
         </StackPanel>
@@ -29,5 +29,5 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-    </StackPanel>
+    </DockPanel>
 </Window>
