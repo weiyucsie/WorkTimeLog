@@ -18,6 +18,10 @@
             <Button Click="Button_Click">紀錄</Button>
             <Button Click="Clear_Click">清除紀錄</Button>
         </StackPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <Label>讀取資料數目: </Label>
+            <TextBox Text="{Binding LoadCount}" MinWidth="30" />
+        </StackPanel>
         <ListBox Name="WorkTimeLogListBox" ItemsSource="{Binding Entries}">
             <ListBox.ItemTemplate>
                 <DataTemplate>

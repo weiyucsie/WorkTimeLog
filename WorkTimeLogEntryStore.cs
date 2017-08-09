@@ -49,6 +49,46 @@ namespace WorkTimeLog
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private int _LoadCount = 10;
+
+        public int LoadCount
+        {
+            get
+            {
+                return this._LoadCount;
+            }
+            set
+            {
+                this._LoadCount = value;
+                this.Entries = LoadEntries();
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("LoadCount"));
+                }
+            }
+        }
+
+        private ObservableCollection<WorkTimeLogEntry> LoadEntries()
+        {
+            if (DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
+            {
+                return new ObservableCollection<WorkTimeLogEntry>();
+            }
+            else
+            {
+                ObservableCollection<WorkTimeLogEntry> NewEntries;
+
+                using (LiteDatabase db = new LiteDatabase(DB_FILENAME))
+                {
+                    var workTimeEntries = db.GetCollection<WorkTimeLogEntry>(DB_COLLECTION);
+                    NewEntries = new ObservableCollection<WorkTimeLogEntry>(workTimeEntries.Find(Query.All(Query.Descending), limit:LoadCount));
+                    NewEntries.CollectionChanged += NewEntries_CollectionChanged;
+                }
+
+                return NewEntries;
+            }
+        }
+
         public ObservableCollection<WorkTimeLogEntry> Entries
         {
             get
@@ -57,25 +97,25 @@ namespace WorkTimeLog
                 {
                     return _Entries;
                 }
-                else if (DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
-                {
-                    _Entries = new ObservableCollection<WorkTimeLogEntry>();
-                }
                 else
                 {
-                    using (LiteDatabase db = new LiteDatabase(DB_FILENAME))
-                    {
-                        var workTimeEntries = db.GetCollection<WorkTimeLogEntry>(DB_COLLECTION);
-                        _Entries = new ObservableCollection<WorkTimeLogEntry>(workTimeEntries.FindAll().Reverse());
-                        _Entries.CollectionChanged += _Entries_CollectionChanged;
-                    }
-                }
+                    this.Entries = LoadEntries();
 
-                return _Entries;
+                    return _Entries;
+                }
+            }
+            private set
+            {
+                _Entries = value;
+
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("Entries"));
+                }
             }
         }
 
-        private void _Entries_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void NewEntries_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             using (LiteDatabase db = new LiteDatabase(DB_FILENAME))
             {
@@ -89,7 +129,10 @@ namespace WorkTimeLog
                         workTimeEntries.Insert(e.NewItems.OfType<WorkTimeLogEntry>());
                         break;
                 }
-                PropertyChanged(this, new PropertyChangedEventArgs("WorkType"));
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("WorkType"));
+                }
             }
         }
 
@@ -101,6 +144,11 @@ namespace WorkTimeLog
         public void Clear()
         {
             Entries.Clear();
+        }
+
+        public void SetLoadCount(int n)
+        {
+
         }
     }
 }
